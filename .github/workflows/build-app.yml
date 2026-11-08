@@ -14,15 +14,14 @@ jobs:
       run: brew install ldid
     - name: Extract Source
       run: |
-        mkdir -p esp
-        unzip External_ESP_Free_Fire-main.zip -d esp
+        unzip External_ESP_Free_Fire-main.zip
     - name: Build
       run: |
-        cd esp
+        cd External_ESP_Free_Fire-main
         make package
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: App-Build
-        path: esp/packages/*.tipa
+        path: External_ESP_Free_Fire-main/packages/*.tipa
         
