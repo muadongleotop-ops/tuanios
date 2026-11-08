@@ -14,8 +14,8 @@ jobs:
       run: brew install ldid
     - name: Extract Source
       run: |
-        unzip esp.zip -d esp
-        cd esp
+        mkdir -p esp
+        unzip External_ESP_Free_Fire-main.zip -d esp
     - name: Build
       run: |
         cd esp
