@@ -20,8 +20,8 @@ jobs:
         cd External_ESP_Free_Fire-main
         export SYSROOT=$(xcrun --sdk iphoneos --show-sdk-path)
         
-        # Thay thế mọi ROOT_PATH_NS(PID_PATH) thành @"/var/mobile/..."
-        find sources esp headers -type f \( -name "*.mm" -o -name "*.m" -o -name "*.h" \) -exec perl -pi -e 's/ROOT_PATH_NS\(PID_PATH\)/@"\/var\/mobile\/Library\/Preferences\/com.trollspeed.pid"/g' {} +
+        # Tìm và sửa đường dẫn include file KIF (nếu cần)
+        find sources -type f -name "*.mm" -exec perl -pi -e 's/#import "UITouch-KIFAdditions.h"/#import "KIF\/UITouch-KIFAdditions.h"/g' {} +
         
         echo '#ifndef HACK_DEFINES_H' > headers/hack_defines.h
         echo '#define HACK_DEFINES_H' >> headers/hack_defines.h
@@ -36,11 +36,12 @@ jobs:
         include $(THEOS)/makefiles/common.mk
         APPLICATION_NAME = TrollSpeed
         
-        TrollSpeed_FILES = $(wildcard sources/*.mm sources/*.m sources/*.cpp sources/*.c esp/*/*.mm esp/*/*.cpp)
+        TrollSpeed_FILES = $(wildcard sources/*.mm sources/*.m sources/*.cpp sources/*.c esp/*/*.mm esp/*/*.cpp sources/KIF/*.m)
         
         TrollSpeed_FRAMEWORKS = UIKit Foundation CoreGraphics QuartzCore Security
         
-        TrollSpeed_CFLAGS = -fobjc-arc -Iheaders -I. -Iesp -Isources -include headers/hack_defines.h -Wno-everything
+        # Thêm -Isources/KIF vào để nó tìm thấy header
+        TrollSpeed_CFLAGS = -fobjc-arc -Iheaders -I. -Iesp -Isources -Isources/KIF -include headers/hack_defines.h -Wno-everything
         TrollSpeed_LDFLAGS = -undefined dynamic_lookup
         include $(THEOS_MAKE_PATH)/application.mk
         EOF
