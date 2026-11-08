@@ -19,10 +19,23 @@ jobs:
       run: |
         cd External_ESP_Free_Fire-main
         export SYSROOT=$(xcrun --sdk iphoneos --show-sdk-path)
-        make package TARGET=iphone:clang:latest:14.0 SYSROOT=$SYSROOT
+        # Xoá Makefile cũ của tác giả để tránh xung đột
+        rm Makefile
+        # Tạo Makefile mới tự động gom toàn bộ file source
+        cat << 'EOF' > Makefile
+        TARGET := iphone:clang:latest:14.0
+        ARCHS = arm64 arm64e
+        include $(THEOS)/makefiles/common.mk
+        APPLICATION_NAME = TrollSpeed
+        TrollSpeed_FILES = $(wildcard sources/*.mm sources/*.m sources/*.cpp sources/*.c)
+        TrollSpeed_FRAMEWORKS = UIKit Foundation
+        TrollSpeed_CFLAGS = -fobjc-arc -Iheaders
+        TrollSpeed_LDFLAGS = -undefined dynamic_lookup
+        include $(THEOS_MAKE_PATH)/application.mk
+        EOF
+        make package SYSROOT=$SYSROOT
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: App-Build
         path: External_ESP_Free_Fire-main/packages/*.tipa
-        
