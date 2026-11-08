@@ -30,10 +30,9 @@ jobs:
         TrollSpeed_FILES = $(wildcard sources/*.mm sources/*.m sources/*.cpp sources/*.c esp/*/*.mm esp/*/*.cpp)
         
         TrollSpeed_FRAMEWORKS = UIKit Foundation CoreGraphics QuartzCore Security
-        TrollSpeed_PRIVATE_FRAMEWORKS = 
         
-        # Thêm -include để ép nạp file cấu hình header
-        TrollSpeed_CFLAGS = -fobjc-arc -Iheaders -I. -Iesp -include headers/Shared.h -include headers/Constants.h -include headers/Config.h
+        # Xoá ép include thủ công, để compiler tự tìm trong thư mục gốc
+        TrollSpeed_CFLAGS = -fobjc-arc -Iheaders -I. -Iesp -Isources
         TrollSpeed_LDFLAGS = -undefined dynamic_lookup
         include $(THEOS_MAKE_PATH)/application.mk
         EOF
