@@ -1,0 +1,28 @@
+name: Build App
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup Theos
+      run: |
+        git clone --recursive https://github.com/theos/theos.git $HOME/theos
+        echo "THEOS=$HOME/theos" >> $GITHUB_ENV
+        echo "$HOME/theos/bin" >> $GITHUB_PATH
+    - name: Install ldid
+      run: brew install ldid
+    - name: Extract Source
+      run: |
+        unzip esp.zip -d esp
+        cd esp
+    - name: Build
+      run: |
+        cd esp
+        make package
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: App-Build
+        path: esp/packages/*.tipa
+        
