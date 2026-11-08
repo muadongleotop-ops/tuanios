@@ -19,9 +19,28 @@ jobs:
       run: |
         cd External_ESP_Free_Fire-main
         export SYSROOT=$(xcrun --sdk iphoneos --show-sdk-path)
-        # Ép cờ link thư viện private của iOS vào môi trường
-        export LDFLAGS="-F$SYSROOT/System/Library/PrivateFrameworks -framework BackBoardServices"
-        make package SYSROOT=$SYSROOT ARCHS="arm64 arm64e"
+        
+        # Xoá Makefile của tác giả và tạo Makefile mới tự động gom code
+        rm -f Makefile
+        cat << 'EOF' > Makefile
+        TARGET := iphone:clang:latest:14.0
+        ARCHS = arm64 arm64e
+        include $(THEOS)/makefiles/common.mk
+        APPLICATION_NAME = TrollSpeed
+        
+        # Gom toàn bộ file source
+        TrollSpeed_FILES = $(wildcard sources/*.mm sources/*.m sources/*.cpp sources/*.c esp/*/*.mm esp/*/*.cpp)
+        
+        # Đưa các framework cần thiết (bỏ BackBoardServices)
+        TrollSpeed_FRAMEWORKS = UIKit Foundation CoreGraphics QuartzCore Security
+        TrollSpeed_PRIVATE_FRAMEWORKS = 
+        
+        TrollSpeed_CFLAGS = -fobjc-arc -Iheaders -I.
+        TrollSpeed_LDFLAGS = -undefined dynamic_lookup
+        include $(THEOS_MAKE_PATH)/application.mk
+        EOF
+        
+        make package SYSROOT=$SYSROOT
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
