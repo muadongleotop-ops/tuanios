@@ -20,7 +20,6 @@ jobs:
         cd External_ESP_Free_Fire-main
         export SYSROOT=$(xcrun --sdk iphoneos --show-sdk-path)
         
-        # Xoá Makefile của tác giả và tạo Makefile mới tự động gom code
         rm -f Makefile
         cat << 'EOF' > Makefile
         TARGET := iphone:clang:latest:14.0
@@ -28,14 +27,13 @@ jobs:
         include $(THEOS)/makefiles/common.mk
         APPLICATION_NAME = TrollSpeed
         
-        # Gom toàn bộ file source
         TrollSpeed_FILES = $(wildcard sources/*.mm sources/*.m sources/*.cpp sources/*.c esp/*/*.mm esp/*/*.cpp)
         
-        # Đưa các framework cần thiết (bỏ BackBoardServices)
         TrollSpeed_FRAMEWORKS = UIKit Foundation CoreGraphics QuartzCore Security
         TrollSpeed_PRIVATE_FRAMEWORKS = 
         
-        TrollSpeed_CFLAGS = -fobjc-arc -Iheaders -I.
+        # Thêm -include để ép nạp file cấu hình header
+        TrollSpeed_CFLAGS = -fobjc-arc -Iheaders -I. -Iesp -include headers/Shared.h -include headers/Constants.h -include headers/Config.h
         TrollSpeed_LDFLAGS = -undefined dynamic_lookup
         include $(THEOS_MAKE_PATH)/application.mk
         EOF
