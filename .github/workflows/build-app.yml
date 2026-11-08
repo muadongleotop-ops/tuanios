@@ -20,10 +20,9 @@ jobs:
         cd External_ESP_Free_Fire-main
         export SYSROOT=$(xcrun --sdk iphoneos --show-sdk-path)
         
-        # 1. Tìm và xoá sạch mọi dấu vết của ROOT_PATH_NS trong toàn bộ source code
-        grep -rl "ROOT_PATH_NS" sources esp headers | xargs sed -i '' 's/ROOT_PATH_NS(\(.*\))/\1/g' || true
+        # Thay thế mọi ROOT_PATH_NS(PID_PATH) thành @"/var/mobile/..."
+        find sources esp headers -type f \( -name "*.mm" -o -name "*.m" -o -name "*.h" \) -exec perl -pi -e 's/ROOT_PATH_NS\(PID_PATH\)/@"\/var\/mobile\/Library\/Preferences\/com.trollspeed.pid"/g' {} +
         
-        # 2. Tạo file hack_defines.h
         echo '#ifndef HACK_DEFINES_H' > headers/hack_defines.h
         echo '#define HACK_DEFINES_H' >> headers/hack_defines.h
         echo '#define PID_PATH "/var/mobile/Library/Preferences/com.trollspeed.pid"' >> headers/hack_defines.h
