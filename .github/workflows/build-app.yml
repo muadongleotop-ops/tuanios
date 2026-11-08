@@ -19,7 +19,8 @@ jobs:
       run: |
         cd External_ESP_Free_Fire-main
         export SYSROOT=$(xcrun --sdk iphoneos --show-sdk-path)
-        # Chạy make thẳng với Makefile gốc của tác giả, nhưng sửa lại đường dẫn SDK
+        # Ép cờ link thư viện private của iOS vào môi trường
+        export LDFLAGS="-F$SYSROOT/System/Library/PrivateFrameworks -framework BackBoardServices"
         make package SYSROOT=$SYSROOT ARCHS="arm64 arm64e"
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
