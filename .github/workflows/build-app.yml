@@ -18,7 +18,8 @@ jobs:
     - name: Build
       run: |
         cd External_ESP_Free_Fire-main
-        make package
+        export SYSROOT=$(xcrun --sdk iphoneos --show-sdk-path)
+        make package TARGET=iphone:clang:latest:14.0 SYSROOT=$SYSROOT
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
