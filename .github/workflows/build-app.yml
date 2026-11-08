@@ -20,8 +20,11 @@ jobs:
         cd External_ESP_Free_Fire-main
         export SYSROOT=$(xcrun --sdk iphoneos --show-sdk-path)
         
-        # Tìm và sửa đường dẫn include file KIF (nếu cần)
-        find sources -type f -name "*.mm" -exec perl -pi -e 's/#import "UITouch-KIFAdditions.h"/#import "KIF\/UITouch-KIFAdditions.h"/g' {} +
+        # 1. Sửa đường dẫn KIF
+        find sources -type f -name "*.mm" -exec sed -i '' 's/#import "UITouch-KIFAdditions.h"/#import "KIF\/UITouch-KIFAdditions.h"/g' {} +
+        
+        # 2. Đè bẹp cái macro ROOT_PATH_NS trong file HUDApp.mm bằng sed
+        sed -i '' 's/ROOT_PATH_NS(PID_PATH)/@"/var/mobile\/Library\/Preferences\/com.trollspeed.pid"/g' sources/HUDApp.mm
         
         echo '#ifndef HACK_DEFINES_H' > headers/hack_defines.h
         echo '#define HACK_DEFINES_H' >> headers/hack_defines.h
@@ -40,7 +43,6 @@ jobs:
         
         TrollSpeed_FRAMEWORKS = UIKit Foundation CoreGraphics QuartzCore Security
         
-        # Thêm -Isources/KIF vào để nó tìm thấy header
         TrollSpeed_CFLAGS = -fobjc-arc -Iheaders -I. -Iesp -Isources -Isources/KIF -include headers/hack_defines.h -Wno-everything
         TrollSpeed_LDFLAGS = -undefined dynamic_lookup
         include $(THEOS_MAKE_PATH)/application.mk
