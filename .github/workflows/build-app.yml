@@ -20,11 +20,13 @@ jobs:
         cd External_ESP_Free_Fire-main
         export SYSROOT=$(xcrun --sdk iphoneos --show-sdk-path)
         
-        # Tạo file header giả (bỏ ROOT_PATH_NS vì Theos đã có sẵn)
         echo '#ifndef HACK_DEFINES_H' > headers/hack_defines.h
         echo '#define HACK_DEFINES_H' >> headers/hack_defines.h
         echo '#define PID_PATH "/var/mobile/Library/Preferences/com.trollspeed.pid"' >> headers/hack_defines.h
         echo '#define NOTIFY_DESTROY_HUD "com.trollspeed.destroyhud"' >> headers/hack_defines.h
+        # Ép ROOT_PATH_NS thành hàm identity để compiler không lú
+        echo '#undef ROOT_PATH_NS' >> headers/hack_defines.h
+        echo '#define ROOT_PATH_NS(path) (path)' >> headers/hack_defines.h
         echo '#endif' >> headers/hack_defines.h
         
         rm -f Makefile
